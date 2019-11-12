@@ -1,8 +1,7 @@
 #!/bin/bash
-cd $GOPATH/src/bosun.org
-DIRS=`find . -maxdepth 1 -type d -iregex './[^._].*' | grep -v '/vendor'`
-PKGS=`go list bosun.org/... | grep -v /vendor/`
-export GO15VENDOREXPERIMENT=1
+DIRS=`find . -maxdepth 1 -type d -iregex './[^._].*'`
+PKGS=`go list bosun.org/...`
+export GO111MODULE=on
 
 O=bosun-monitor
 R=bosun
@@ -69,7 +68,7 @@ fi
 
 echo -e "\nTesting that bosun starts and stops cleanly"
 #TODO: save linux build from above? cant seem to find where it is though.
-cd $GOPATH/src/bosun.org/cmd/bosun
+cd cmd/bosun
 go build .
 echo -e 'RuleFilePath = "rule.conf"' > bosun.toml
 echo "" > rule.conf
