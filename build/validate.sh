@@ -101,9 +101,9 @@ if [ "$BUILDMSG" == '' ]; then
 	BUILDSTATUS=success
 fi
 
-if [ "$TRAVIS" != '' ]; then
-	setStatus -o $O -r $R -s=$BUILDSTATUS -c bosun -d="$BUILDMSG" -sha=$SHA
-fi
+#if [ "$TRAVIS" != '' ]; then
+#	setStatus -o $O -r $R -s=$BUILDSTATUS -c bosun -d="$BUILDMSG" -sha=$SHA
+#fi
 
 let "RESULT = $GOBUILDRESULT | $GOFMTRESULT | $GOVETRESULT | $GOTESTRESULT | $GOGENERATERESULT | $GOGENERATEDIFFRESULT | $RUN_BOSUN"
 exit $RESULT
