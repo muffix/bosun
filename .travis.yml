@@ -15,7 +15,7 @@ notifications:
 
 install:
   - chmod +x ${TRAVIS_BUILD_DIR}/build/validate.sh
-  - go get github.com/captncraig/setStatus
+#  - go get github.com/captncraig/setStatus
   - npm i -g typescript@2.4.2
 
 script: $GOPATH/src/bosun.org/build/validate.sh
