@@ -17,7 +17,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/facebookgo/httpcontrol"
+	"github.com/hashicorp/go-retryablehttp"
 
 	version "bosun.org/_version"
 
@@ -69,14 +69,13 @@ func (t *tsdbrelayHTTPTransport) RoundTrip(req *http.Request) (*http.Response, e
 }
 
 func init() {
-	client := &http.Client{
-		Transport: &tsdbrelayHTTPTransport{
-			"Tsdbrelay/" + version.ShortVersion(),
-			&httpcontrol.Transport{
-				RequestTimeout: time.Minute,
-			},
-		},
+	c := retryablehttp.NewClient()
+	c.HTTPClient.Timeout = time.Minute
+	c.HTTPClient.Transport = &tsdbrelayHTTPTransport{
+		"Tsdbrelay/" + version.ShortVersion(),
+		c.HTTPClient.Transport,
 	}
+	client := c.StandardClient()
 	http.DefaultClient = client
 	collect.DefaultClient = client
 }

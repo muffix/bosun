@@ -17,6 +17,7 @@ import (
 	"time"
 
 	version "bosun.org/_version"
+	"github.com/hashicorp/go-retryablehttp"
 	"gopkg.in/fsnotify.v1"
 
 	"bosun.org/annotate/backend"
@@ -33,7 +34,6 @@ import (
 	"bosun.org/opentsdb"
 	"bosun.org/slog"
 	"bosun.org/util"
-	"github.com/facebookgo/httpcontrol"
 	elastic6 "github.com/olivere/elastic"
 	elastic2 "gopkg.in/olivere/elastic.v3"
 	elastic5 "gopkg.in/olivere/elastic.v5"
@@ -55,36 +55,25 @@ func (t *bosunHttpTransport) RoundTrip(req *http.Request) (*http.Response, error
 var startTime time.Time
 
 func init() {
-	startTime = time.Now().UTC()
-	client := &http.Client{
-		Transport: &bosunHttpTransport{
-			"Bosun/" + version.ShortVersion(),
-			&httpcontrol.Transport{
-				Proxy:          http.ProxyFromEnvironment,
-				RequestTimeout: time.Minute,
-				MaxTries:       3,
-			},
-		},
+	makeHttpClient := func(maxRetries int, timeout time.Duration) *http.Client {
+		c := retryablehttp.NewClient()
+		c.RetryMax = maxRetries
+		c.HTTPClient.Timeout = timeout
+		c.HTTPClient.Transport = &bosunHttpTransport{
+			UserAgent:    "Bosun/" + version.ShortVersion(),
+			RoundTripper: c.HTTPClient.Transport,
+		}
+		return c.StandardClient()
 	}
+
+	startTime = time.Now().UTC()
+	client := makeHttpClient(3, time.Minute)
+
 	http.DefaultClient = client
 	opentsdb.DefaultClient = client
 	graphite.DefaultClient = client
-	collect.DefaultClient = &http.Client{
-		Transport: &bosunHttpTransport{
-			"Bosun/" + version.ShortVersion(),
-			&httpcontrol.Transport{
-				RequestTimeout: time.Minute,
-			},
-		},
-	}
-	sched.DefaultClient = &http.Client{
-		Transport: &bosunHttpTransport{
-			"Bosun/" + version.ShortVersion(),
-			&httpcontrol.Transport{
-				RequestTimeout: time.Second * 5,
-			},
-		},
-	}
+	collect.DefaultClient = makeHttpClient(0, time.Minute)
+	sched.DefaultClient = makeHttpClient(0, 5*time.Second)
 }
 
 var (

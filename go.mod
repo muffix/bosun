@@ -28,11 +28,6 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/dimchansky/utfbom v1.0.0 // indirect
 	github.com/edsrzf/mmap-go v0.0.0-20151128182504-903d080718bd // indirect
-	github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 // indirect
-	github.com/facebookgo/freeport v0.0.0-20150612182905-d4adf43b75b9 // indirect
-	github.com/facebookgo/httpcontrol v0.0.0-20150708234001-ccde4420e1fe
-	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 // indirect
-	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
 	github.com/fortytw2/leaktest v1.3.0 // indirect
 	github.com/garyburd/redigo v0.0.0-20151219232044-836b6e58b335
 	github.com/glendc/gopher-json v0.0.0-20170414221815-dc4743023d0c // indirect
@@ -50,6 +45,7 @@ require (
 	github.com/gorilla/css v0.0.0-20150317222238-a80e24ada269 // indirect
 	github.com/gorilla/mux v0.0.0-20160920230813-757bef944d0f
 	github.com/gorilla/securecookie v0.0.0-20161003051601-fa5329f91370 // indirect
+	github.com/hashicorp/go-retryablehttp v0.6.6
 	github.com/influxdata/influxdb v1.6.3
 	github.com/influxdata/influxql v0.0.0-20180823200743-a7267bff5327
 	github.com/jinzhu/now v0.0.0-20151001141511-ce80572eb55a

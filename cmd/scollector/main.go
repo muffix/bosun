@@ -19,6 +19,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/go-retryablehttp"
+
 	version "bosun.org/_version"
 	"bosun.org/cmd/scollector/collectors"
 	"bosun.org/cmd/scollector/conf"
@@ -29,7 +31,6 @@ import (
 	"bosun.org/snmp"
 	"bosun.org/util"
 	"github.com/BurntSushi/toml"
-	"github.com/facebookgo/httpcontrol"
 )
 
 var (
@@ -87,14 +88,15 @@ func main() {
 		collect.AuthToken = conf.AuthToken
 		metadata.AuthToken = conf.AuthToken
 	}
-	client := &http.Client{
-		Transport: &scollectorHTTPTransport{
-			ua,
-			&httpcontrol.Transport{
-				RequestTimeout: time.Minute,
-			},
-		},
+
+	retryableClient := retryablehttp.NewClient()
+	retryableClient.HTTPClient.Timeout = time.Minute
+	retryableClient.HTTPClient.Transport = &scollectorHTTPTransport{
+		ua,
+		retryableClient.HTTPClient.Transport,
 	}
+	client := retryableClient.StandardClient()
+
 	http.DefaultClient = client
 	collect.DefaultClient = client
 	if *flagHost != "" {
